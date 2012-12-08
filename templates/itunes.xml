@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+<channel>
+    <title><%= config['title'] %></title>
+    <link><%= config['urlbase'] %></link>
+    <language>en</language>
+    <copyright>℗ &amp; © <%= config['author'] %></copyright>
+    <itunes:subtitle><%= config['subtitle'] %></itunes:subtitle>
+    <itunes:author><%= config['author'] %></itunes:author>
+    <itunes:summary><%= config['itunes']['summary'] %></itunes:summary>
+
+    <itunes:owner>
+        <itunes:name><%= config['itunes']['owner']['name'] %></itunes:name>
+        <itunes:email><%= config['itunes']['owner']['email'] %></itunes:email>
+    </itunes:owner>
+   
+    <itunes:image href="<%= $itunes_image_url %>"/>
+    <itunes:category text="<%= config['itunes']['category'] %>"/>
+    
+    <%- episodes.each do |episode| %>
+    <item>
+      <title><%= episode.title %></title>
+      <itunes:subtitle><%= episode.subtitle %></itunes:subtitle>
+      <itunes:summary><%= episode.synopsis %></itunes:summary>
+      <enclosure url="<%= episode.file_url %>" length="<%= episode.size %>" type="audio/mpeg"/>
+      <pubDate><%= episode.date.rfc2822 %></pubDate>
+      <itunes:duration><%= episode.duration %></itunes:duration>
+      <itunes:keywords><%= episode.keywords %></itunes:keywords>
+    </item>
+    <% end %>
+
+</channel>
+</rss>

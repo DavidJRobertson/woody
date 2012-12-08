@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Podgen::VERSION
   gem.authors       = ["David Robertson"]
   gem.email         = ["david@davidr.me"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = "PodGen"
+  gem.summary       = "Podcast Static Site Generator"
   gem.homepage      = "http://davidr.me"
 
   gem.files         = `git ls-files`.split($/)

@@ -10,15 +10,66 @@ require 'fileutils'
 
 module Podgen
   # Load configuration
-  $config = YAML.load_file("config.yml")
-  AWS::S3::Base.establish_connection!(
-    :access_key_id     => $config['s3']['accesskey']['id'], 
-    :secret_access_key => $config['s3']['accesskey']['secret']
-  )
-  AWS::S3::DEFAULT_HOST.replace $config['s3']['hostname']
-  $bucketname = $config['s3']['bucket']  
-  $itunes_image_url = "FILL IN URL"
+  def self.init
+    begin
+      $config = YAML.load_file("podgen-config.yml")
+    rescue Errno::ENOENT
+      puts "This doesn't look like a valid PodGen site directory!"
+      return
+    end
+    
+    AWS::S3::Base.establish_connection!(
+      :access_key_id     => $config['s3']['accesskey']['id'], 
+      :secret_access_key => $config['s3']['accesskey']['secret']
+    )
+    AWS::S3::DEFAULT_HOST.replace $config['s3']['hostname']
+    $bucketname = $config['s3']['bucket']  
+    $itunes_image_url = "FILL IN URL"
+    $source_root = File.expand_path("../../templates", __FILE__)
+  end
   
+  def self.new_site(name)
+    puts "Creating new site '#{name}'..."
+    if File.directory?(name)
+      puts "Error: directory '#{name}' already exists!"
+      return false
+    end
+    
+
+
+    
+    cdir_p(name)
+    cpy_t("podgen-config.yml", "#{name}/podgen-config.yml")
+    
+    cdir_p("#{name}/templates")
+    cpy_t("layout.html", "#{name}/templates/layout.html")
+    cpy_t("index.html", "#{name}/templates/index.html")
+    cpy_t("episode.html", "#{name}/templates/episode.html")
+        
+    cdir_p("#{name}/templates/assets")
+    cpy_t("stylesheet.css", "#{name}/templates/assets/stylesheet.css")
+    
+    cdir_p("#{name}/content")
+    cpy_t("metadata.yml", "#{name}/content/metadata.yml")
+
+    
+    cdir_p("#{name}/output")
+    cdir_p("#{name}/output/assets")
+    cdir_p("#{name}/output/assets/mp3")
+    cdir_p("#{name}/output/episode")    
+    
+    puts "Done!"
+    puts "Now, do `cd #{name}` then edit the config file, podgen-config.yml."
+  end
+  
+  def self.cdir_p(dir)
+    puts "Creating directory '#{dir}'"
+    FileUtils.mkdir_p(dir)
+  end
+  def self.cpy_t(source, destination)
+    puts "Creating file '#{destination}'"
+    FileUtils.cp File.join($source_root, source), destination
+  end
   
   class Episode
     def self.new_from_meta(filename, meta)
@@ -73,14 +124,13 @@ module Podgen
     end
   end
 
-  def compile()
+  def self.compile()
     puts "Compiling..."
     meta = YAML.load_file("content/metadata.yml")
     
     episodes     = Array.new
     filesfound   = Array.new 
     touchedfiles = Array.new
-    
     Dir.glob('content/*.mp3') do |file|
       filename = file[8..-1]
       unless meta[filename].nil?
@@ -95,9 +145,11 @@ module Podgen
     end
 
     # Check for files in meta but not found
-    meta.each do |file|
-      next if filesfound.include? file[0]
-      puts "Warning: found metadata for file #{file[0]}, but file itself is missing. Will not be published."
+    unless meta == false
+      meta.each do |file|
+        next if filesfound.include? file[0]
+        puts "Warning: found metadata for file #{file[0]}, but file itself is missing. Will not be published."
+      end
     end
     
     # Make sure necessary directories exist
@@ -149,7 +201,7 @@ module Podgen
     end
     
     # Update iTunes RSS
-    itunes = File.read "templates/itunes.xml"
+    itunes = File.read "#{$source_root}/itunes.xml" # Use itunes.xml template in gem, not in site's template folder.
     itunes = Erubis::Eruby.new(itunes)
     itunes_compiled = itunes.result(config: $config, episodes: episodes)
     File.open("output/itunes.xml", 'w') {|f| f.write(itunes_compiled) }
@@ -163,7 +215,7 @@ module Podgen
     purge_output(touchedfiles)
   end
 
-  def purge_output(touchedfiles, subdir = "")
+  def self.purge_output(touchedfiles, subdir = "")
     Dir.foreach("output/#{subdir}") do |item|
       next if item == '.' or item == '..'
       p = "#{subdir}#{item}"
@@ -175,7 +227,7 @@ module Podgen
     end
   end
 
-  def deploy
+  def self.deploy
     touchedfiles = Array.new  
     deploy_r touchedfiles
     
@@ -183,7 +235,7 @@ module Podgen
     purge_bucket touchedfiles  
   end
 
-  def deploy_r(touchedfiles, subdir = "")
+  def self.deploy_r(touchedfiles, subdir = "")
     puts "Deploying... " if subdir == ""
     Dir.foreach("output/#{subdir}") do |item|
       next if item == '.' or item == '..'
@@ -196,14 +248,14 @@ module Podgen
     end
   end
 
-  def purge_bucket(touchedfiles)
+  def self.purge_bucket(touchedfiles)
     bucket = AWS::S3::Bucket.find $bucketname
     bucket.objects.each do |object|
       object.delete unless touchedfiles.include? object.key
     end
   end
 
-  def filehash(filepath)
+  def self.filehash(filepath)
     sha1 = Digest::SHA1.new
     File.open(filepath) do|file|
       buffer = ''
@@ -216,7 +268,7 @@ module Podgen
     return sha1.to_s
   end
 
-  def upload(objectname, filepath)  
+  def self.upload(objectname, filepath)  
     # Generate hash of file
     hash = filehash filepath
     
@@ -238,8 +290,10 @@ module Podgen
   end
 
 
+
+
+end
+
   def link_to(name, url)
     return %Q{<a href="#{url}">#{name}</a>}
   end
-
-end

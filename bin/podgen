@@ -3,21 +3,34 @@
 require 'podgen'
 require 'commander/import'
 
+puts
+puts
+puts
+
 program :name, 'podgen'
 program :version, Podgen::VERSION
 program :description, 'Podcast static site generator'
 
+
 command :compile do |c|
   c.description = "Compiles the site"
   c.action do |args, options|
-    Podgen::compile
+    Podgen.init
+    Podgen.compile
   end
 end
 
 command :deploy do |c|
   c.description = "Deploys the site"
   c.action do |args, options|
-    Podgen::deploy
+    Podgen.init
+    Podgen.deploy
   end
 end
 
+command :new do |c|
+  c.description = "Creates a blank podgen site with some defaults"
+  c.action do |args, options|
+    Podgen::new_site(args[0])
+  end
+end

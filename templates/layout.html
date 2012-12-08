@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= $config['title'] %></title>
+    <link rel="stylesheet" type="text/css" href="/assets/stylesheet.css" />
+  </head>
+  <body>
+    <h1><%= link_to $config['title'], "/" %></h1>
+    <h2><%= $config['subtitle'] %></h2>
+    <hr />
+
+    <%= yield %>
+  </body>
+</html>
