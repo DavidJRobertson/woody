@@ -222,7 +222,7 @@ module Podgen
       p = "#{subdir}#{item}"
       begin
         File.delete "output/#{subdir}#{item}" unless touchedfiles.include? p
-      rescue Errno::EISDIR
+      rescue Errno::EISDIR, Errno::EPERM # Rescuing EPERM seems to be necessary on macs, hmm :/
         purge_output touchedfiles, "#{p}/"
       end  
     end

@@ -48,3 +48,10 @@ command :new do |c|
     Podgen::new_site(args[0])
   end
 end
+
+#command :update_templates do |c|
+#  c.description = "Sets template files to current default. DESTRUCTIVE!"
+#  c.action do |args, options|
+#    Podgen::update_templates
+#  end
+#end
