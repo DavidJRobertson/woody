@@ -36,9 +36,6 @@ module Podgen
       return false
     end
     
-
-
-    
     cdir_p(name)
     cpy_t("podgen-config.yml", "#{name}/podgen-config.yml")
     
@@ -61,6 +58,15 @@ module Podgen
     
     puts "Done!"
     puts "Now, do `cd #{name}` then edit the config file, podgen-config.yml."
+  end
+  
+  def self.update_templates
+    puts "Updating templates..."
+    cpy_t("layout.html", "templates/layout.html")
+    cpy_t("index.html", "templates/index.html")
+    cpy_t("episode.html", "templates/episode.html")
+    cpy_t("stylesheet.css", "templates/assets/stylesheet.css")
+    puts "Done! Thanks for updating :)"
   end
   
   def self.cdir_p(dir)
