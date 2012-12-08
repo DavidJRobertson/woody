@@ -28,6 +28,15 @@ command :deploy do |c|
   end
 end
 
+command :cd do |c|
+  c.description = "Compiles then deploys the site"
+  c.action do |args, options|
+    Podgen.init
+    Podgen.compile
+    Podgen.deploy
+  end
+end
+
 command :new do |c|
   c.description = "Creates a blank podgen site with some defaults"
   c.syntax = "new [sitename]"
