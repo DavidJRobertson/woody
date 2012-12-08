@@ -134,7 +134,7 @@ module Podgen
     touchedfiles = Array.new
     Dir.glob('content/*.mp3') do |file|
       filename = file[8..-1]
-      unless meta[filename].nil?
+      unless meta == false or meta[filename].nil?
         # Episode metadata already stored
         episodes   << Episode.new_from_meta(filename, meta[filename])
         filesfound << filename
