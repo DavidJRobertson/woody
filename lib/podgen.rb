@@ -9,6 +9,8 @@ require 'fileutils'
 
 
 module Podgen
+  $source_root = File.expand_path("../../templates", __FILE__)
+
   # Load configuration
   def self.init
     begin
@@ -25,9 +27,8 @@ module Podgen
     AWS::S3::DEFAULT_HOST.replace $config['s3']['hostname']
     $bucketname = $config['s3']['bucket']  
     $itunes_image_url = "FILL IN URL"
-    $source_root = File.expand_path("../../templates", __FILE__)
   end
-  
+    
   def self.new_site(name)
     puts "Creating new site '#{name}'..."
     if File.directory?(name)

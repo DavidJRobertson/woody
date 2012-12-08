@@ -30,7 +30,12 @@ end
 
 command :new do |c|
   c.description = "Creates a blank podgen site with some defaults"
+  c.syntax = "new [sitename]"
   c.action do |args, options|
+    if args[0].nil? or !(args[0].is_a? String)
+      puts "Syntax: podgen new [sitename]"
+      exit!
+    end
     Podgen::new_site(args[0])
   end
 end
