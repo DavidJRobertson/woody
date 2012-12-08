@@ -1,18 +1,10 @@
-# Podgen
+# PodGen
 
-TODO: Write a gem description
+Podcast static site generator
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'podgen'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+To install, run this:
 
     $ gem install podgen
 
