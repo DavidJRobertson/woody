@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["david@davidr.me"]
   gem.description   = "PodGen"
   gem.summary       = "Podcast Static Site Generator"
-  gem.homepage      = "http://davidr.me"
+  gem.homepage      = "https://github.com/DavidJRobertson/podgen"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
