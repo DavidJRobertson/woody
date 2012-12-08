@@ -2,7 +2,7 @@ title: Title
 subtitle: Subtitle
 author: Author
 
-# Include http://, domain name, and *NO trailing slash*
+# Include http://, domain name, but *NO trailing slash*
 urlbase: http://example.com
 
 mp3:
@@ -24,4 +24,4 @@ s3:
   accesskey:
     id: your-aws-access-key-id
     secret: your-aws-access-key-secret
-  bucket: bucketname
+  bucket: example.com
