@@ -1,4 +1,4 @@
-# PodGen
+# Woody
 
 Podcast static site generator
 
@@ -6,7 +6,7 @@ Podcast static site generator
 
 To install, run this:
 
-    $ gem install podgen
+    $ gem install woody
 
 ## Usage
 

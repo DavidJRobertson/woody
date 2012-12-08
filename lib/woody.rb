@@ -1,4 +1,4 @@
-require "podgen/version"
+require "woody/version"
 
 require 'yaml'
 require 'erubis'
@@ -8,15 +8,15 @@ require 'digest'
 require 'fileutils'
 
 
-module Podgen
+module Woody
   $source_root = File.expand_path("../../templates", __FILE__)
 
   # Load configuration
   def self.init
     begin
-      $config = YAML.load_file("podgen-config.yml")
+      $config = YAML.load_file("woody-config.yml")
     rescue Errno::ENOENT
-      puts "This doesn't look like a valid PodGen site directory!"
+      puts "This doesn't look like a valid Woody site directory!"
       return
     end
     
@@ -37,7 +37,7 @@ module Podgen
     end
     
     cdir_p(name)
-    cpy_t("podgen-config.yml", "#{name}/podgen-config.yml")
+    cpy_t("woody-config.yml", "#{name}/woody-config.yml")
     
     cdir_p("#{name}/templates")
     cpy_t("layout.html", "#{name}/templates/layout.html")
@@ -57,7 +57,7 @@ module Podgen
     cdir_p("#{name}/output/episode")    
     
     puts "Done!"
-    puts "Now, do `cd #{name}` then edit the config file, podgen-config.yml."
+    puts "Now, do `cd #{name}` then edit the config file, woody-config.yml."
   end
   
   def self.update_templates

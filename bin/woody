@@ -1,58 +1,58 @@
 #! /usr/bin/env ruby
 
-require 'podgen'
+require 'woody'
 require 'commander/import'
 
 puts
 puts
 puts
 
-program :name, 'podgen'
-program :version, Podgen::VERSION
+program :name, 'woody'
+program :version, Woody::VERSION
 program :description, 'Podcast static site generator'
 
 
 command :compile do |c|
   c.description = "Compiles the site"
   c.action do |args, options|
-    Podgen.init
-    Podgen.compile
+    Woody.init
+    Woody.compile
   end
 end
 
 command :deploy do |c|
   c.description = "Deploys the site"
   c.action do |args, options|
-    Podgen.init
-    Podgen.deploy
+    Woody.init
+    Woody.deploy
   end
 end
 
 command :cd do |c|
   c.description = "Compiles then deploys the site"
   c.action do |args, options|
-    Podgen.init
-    Podgen.compile
-    Podgen.deploy
+    Woody.init
+    Woody.compile
+    Woody.deploy
   end
 end
 
 command :new do |c|
-  c.description = "Creates a blank podgen site with some defaults"
+  c.description = "Creates a blank Woody site with some defaults"
   c.syntax = "new [sitename]"
   c.action do |args, options|
     if args[0].nil? or !(args[0].is_a? String)
-      puts "Syntax: podgen new [sitename]"
+      puts "Syntax: woody new [sitename]"
       exit!
     end
-    Podgen::new_site(args[0])
+    Woody::new_site(args[0])
   end
 end
 
 command :update_templates do |c|
   c.description = "Sets template files to current default. DESTRUCTIVE!"
   c.action do |args, options|
-    Podgen.init
-    Podgen::update_templates
+    Woody.init
+    Woody::update_templates
   end
 end
