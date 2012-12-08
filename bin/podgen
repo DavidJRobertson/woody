@@ -1,0 +1,23 @@
+#! /usr/bin/env ruby
+
+require 'podgen'
+require 'commander/import'
+
+program :name, 'podgen'
+program :version, Podgen::VERSION
+program :description, 'Podcast static site generator'
+
+command :compile do |c|
+  c.description = "Compiles the site"
+  c.action do |args, options|
+    Podgen::compile
+  end
+end
+
+command :deploy do |c|
+  c.description = "Deploys the site"
+  c.action do |args, options|
+    Podgen::deploy
+  end
+end
+
