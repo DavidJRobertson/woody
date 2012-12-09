@@ -43,15 +43,7 @@ module Woody
       end
 
       # Copy over assets
-      Dir.foreach("templates/assets") do |item|
-        next if item == '.' or item == '..'
-        begin
-          FileUtils.copy "templates/assets/#{item}", "output/assets/#{item}"
-          touchedfiles << "assets/#{item}"
-        rescue Errno::EISDIR
-          puts "Warning: subdirectories in templates/assets are ignored!"
-        end
-      end
+      copy_assets_r touchedfiles
 
       # Update index.html
       layout = File.read('templates/layout.html')
@@ -103,6 +95,20 @@ module Woody
     end
 
     private
+
+    # Copies custom assets to output recursively
+    def self.copy_assets_r(touchedfiles, subdir="")
+      Dir.foreach("templates/assets/#{subdir}") do |item|
+        next if item == '.' or item == '..'
+        unless File.directory?("templates/assets/#{subdir}#{item}")
+          FileUtils.copy "templates/assets/#{subdir}#{item}", "output/assets/#{subdir}#{item}"
+          touchedfiles << "assets/#{subdir}#{item}"
+        else
+          FileUtils.mkdir_p "output/assets/#{subdir}#{item}"
+          copy_assets_r touchedfiles, "#{subdir}#{item}/"
+        end
+      end
+    end
 
     # Deletes old files from the site's output directory
     # @param [Array]  touchedfiles specifies which files to keep

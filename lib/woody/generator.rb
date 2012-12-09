@@ -47,9 +47,6 @@ module Woody
 
     private
 
-    # Path of template directory inside gem
-    $source_root = File.expand_path("../../templates", __FILE__)
-
     # Creates a directory and its parents if necessary, outputting a notice to STDOUT
     # @param [String] dir specifies the directory to create
     def self.cdir_p(dir)

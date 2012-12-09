@@ -17,6 +17,8 @@ $VERBOSE = oldverbosity
 
 # Woody podcast static site generator
 module Woody
+  # Path of template directory inside gem
+  $source_root = File.expand_path("../../templates", __FILE__)
 
   # Load configuration and connect to S3
   def self.init
