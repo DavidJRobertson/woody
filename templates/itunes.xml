@@ -8,14 +8,16 @@
     <itunes:subtitle><%= config['subtitle'] %></itunes:subtitle>
     <itunes:author><%= config['author'] %></itunes:author>
     <itunes:summary><%= config['itunes']['summary'] %></itunes:summary>
+    <description><%= config['itunes']['summary'] %></description>
 
     <itunes:owner>
         <itunes:name><%= config['itunes']['owner']['name'] %></itunes:name>
         <itunes:email><%= config['itunes']['owner']['email'] %></itunes:email>
     </itunes:owner>
    
-    <itunes:image href="<%= $itunes_image_url %>"/>
-    <itunes:category text="<%= config['itunes']['category'] %>"/>
+    <itunes:image href="<%= $config['urlbase'] + "/assets/iTunes.png" %>"/>
+    <itunes:category text="<%= $config['itunes']['category'] %>"/>
+    
     
     <%- episodes.each do |episode| %>
     <item>
@@ -26,6 +28,7 @@
       <pubDate><%= episode.date.rfc2822 %></pubDate>
       <itunes:duration><%= episode.duration %></itunes:duration>
       <itunes:keywords><%= episode.keywords %></itunes:keywords>
+      <guid><%= episode.url %></guid>
     </item>
     <% end %>
 

@@ -7,9 +7,9 @@ require 'digest'
 require 'fileutils'
 require 'uri'
 
-oldverb = $VERBOSE; $VERBOSE = nil # Silence depreciation notice
+oldverbosity = $VERBOSE; $VERBOSE = nil # Silence depreciation notice
 require 'mp3info'
-$VERBOSE = oldverb
+$VERBOSE = oldverbosity
 
 
 module Woody
@@ -42,7 +42,6 @@ module Woody
     AWS::S3::Base.establish_connection!(options)
     AWS::S3::DEFAULT_HOST.replace $config['s3']['hostname']
     $bucketname = $config['s3']['bucket']  
-    $itunes_image_url = "FILL IN URL"
   end
     
   def self.new_site(name)
@@ -65,7 +64,7 @@ module Woody
     
     cdir_p("#{name}/content")
     cpy_t("metadata.yml", "#{name}/content/metadata.yml")
-
+    cpy_t("iTunes.png", "#{name}/content/iTunes.png")
     
     cdir_p("#{name}/output")
     cdir_p("#{name}/output/assets")
@@ -221,6 +220,14 @@ module Woody
       end
       File.open("output/#{episode.path(false)}", 'w') {|f| f.write(episode_compiled) }
       touchedfiles << episode.path(false)
+    end
+    
+    # Copy over iTunes.png
+    if File.exist? "content/iTunes.png"
+      FileUtils.copy "content/iTunes.png", "output/assets/iTunes.png"
+      touchedfiles << "assets/iTunes.png"
+    else
+      puts "Warning: content/iTunes.png missing!"
     end
     
     # Update iTunes RSS
