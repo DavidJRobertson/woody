@@ -6,6 +6,7 @@ require 'mp3info'
 require 'aws/s3'
 require 'digest'
 require 'fileutils'
+require 'uri'
 
 
 module Woody
@@ -20,10 +21,22 @@ module Woody
       return
     end
     
-    AWS::S3::Base.establish_connection!(
+    options = { 
       :access_key_id     => $config['s3']['accesskey']['id'], 
       :secret_access_key => $config['s3']['accesskey']['secret']
-    )
+    }
+    
+    unless ENV['http_proxy'].nil?
+      uri = URI(ENV['http_proxy'])
+      p = Hash.new
+      p[:host]     = uri.host
+      p[:port]     = uri.port
+      p[:user]     = uri.user     unless uri.user.nil?
+      p[:password] = uri.password unless uri.password.nil?
+      options[:proxy] = p 
+    end
+    
+    AWS::S3::Base.establish_connection!(options)
     AWS::S3::DEFAULT_HOST.replace $config['s3']['hostname']
     $bucketname = $config['s3']['bucket']  
     $itunes_image_url = "FILL IN URL"
