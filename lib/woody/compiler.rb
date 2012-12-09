@@ -92,6 +92,9 @@ module Woody
 
       # Purge left over files
       purge_output(touchedfiles)
+
+      # Remove all empty directories from the output
+      Dir['output/**/*'].select { |d| File.directory? d }.select { |d| (Dir.entries(d) - %w[ . .. ]).empty? }.each { |d| Dir.rmdir d }
     end
 
     private
