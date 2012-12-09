@@ -1,5 +1,9 @@
 module Woody
+  # Handles functions related to generating Woody sites and updating them and their data stores
   module Generator
+    # Generates a blank skeleton Woody site
+    # Do not call Woody::init before this!
+    # @param [String] name specifies the relative directory to create the new site in.
     def self.new_site(name)
       puts "Creating new site '#{name}'..."
       if File.directory?(name)
@@ -31,6 +35,7 @@ module Woody
       puts "Now, do `cd #{name}` then edit the config file, woody-config.yml."
     end
 
+    # Replaces the templates in the Woody site with the gem's current default ones
     def self.update_templates
       puts "Updating templates..."
       cpy_t("layout.html", "templates/layout.html")
@@ -42,10 +47,19 @@ module Woody
 
     private
 
+    # Path of template directory inside gem
+    $source_root = File.expand_path("../../templates", __FILE__)
+
+    # Creates a directory and its parents if necessary, outputting a notice to STDOUT
+    # @param [String] dir specifies the directory to create
     def self.cdir_p(dir)
       puts "Creating directory '#{dir}'"
       FileUtils.mkdir_p(dir)
     end
+
+    # Copies a file from inside the gem's template directory, to a location in the current Woody site., outputting a notice to STDOUT.
+    # @param [String] source specificies the source file (inside the gem's internal template directory)
+    # @param [String] destination specidies the destination (inside the Woody site's root directory)
     def self.cpy_t(source, destination)
       puts "Creating file '#{destination}'"
       FileUtils.cp File.join($source_root, source), destination

@@ -1,5 +1,8 @@
 module Woody
+  # Handles functions related to compiling the Woody site
   module Compiler
+
+    # Compiles the Woody site
     def self.compile()
       puts "Compiling..."
       meta = YAML.load_file("content/metadata.yml")
@@ -101,6 +104,9 @@ module Woody
 
     private
 
+    # Deletes old files from the site's output directory
+    # @param [Array]  touchedfiles specifies which files to keep
+    # @param [String] subdir specifies a subdirectory of output/ to work in (used for recursion)
     def self.purge_output(touchedfiles, subdir = "")
       Dir.foreach("output/#{subdir}") do |item|
         next if item == '.' or item == '..'

@@ -15,10 +15,10 @@ oldverbosity = $VERBOSE; $VERBOSE = nil # Silence depreciation notice
 require 'mp3info'
 $VERBOSE = oldverbosity
 
-
+# Woody podcast static site generator
 module Woody
-  $source_root = File.expand_path("../../templates", __FILE__)
-  # Load configuration
+
+  # Load configuration and connect to S3
   def self.init
     begin
       $config = YAML.load_file("woody-config.yml")
@@ -49,10 +49,16 @@ module Woody
 
 end
 
-def link_to(name, url)
-  return %Q{<a href="#{url}">#{name}</a>}
+
+# Generates HTML hyperlink/anchor tag
+# @param  [String] text specifies text to display for link
+# @param  [String] url specifies URL/path to link to
+# @return [String] generated HTML anchor tag (hyperlink)
+def link_to(text, url)
+  return %Q{<a href="#{url}">#{text}</a>}
 end
 
+# @return HTML meta generator tag with Woody attribution and version
 def generator_meta_tag()
   return %Q{<meta name="generator" content="Woody #{Woody::VERSION}" />}
 end
