@@ -8,6 +8,7 @@ program :name, 'woody'
 program :version, Woody::VERSION
 program :description, 'Podcast static site generator'
 
+default_command :compile
 
 command :compile do |c|
   c.description = "Compiles the site"
@@ -16,6 +17,7 @@ command :compile do |c|
     Woody::Compiler.compile
   end
 end
+alias_command :c, :compile
 
 command :deploy do |c|
   c.description = "Deploys the site"
@@ -24,6 +26,7 @@ command :deploy do |c|
     Woody::Deployer.deploy
   end
 end
+alias_command :d, :deploy
 
 command :cd do |c|
   c.description = "Compiles then deploys the site"
@@ -46,10 +49,11 @@ command :new do |c|
   end
 end
 
-command :update_templates do |c|
+command :'update templates' do |c|
   c.description = "Sets template files to current default. DESTRUCTIVE!"
   c.action do |args, options|
     Woody.init
     Woody::Generator.update_templates
   end
 end
+alias_command :'templates update', :'update templates'
