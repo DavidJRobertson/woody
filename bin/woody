@@ -3,9 +3,6 @@
 require 'woody'
 require 'commander/import'
 
-puts
-puts
-puts
 
 program :name, 'woody'
 program :version, Woody::VERSION

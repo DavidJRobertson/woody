@@ -2,11 +2,14 @@ require "woody/version"
 
 require 'yaml'
 require 'erubis'
-require 'mp3info'
 require 'aws/s3'
 require 'digest'
 require 'fileutils'
 require 'uri'
+
+oldverb = $VERBOSE; $VERBOSE = nil # Silence depreciation notice
+require 'mp3info'
+$VERBOSE = oldverb
 
 
 module Woody
