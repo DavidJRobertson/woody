@@ -12,9 +12,10 @@ default_command :compile
 
 command :compile do |c|
   c.description = "Compiles the site"
+  c.option "--no-add", "Don't ask to add new metadata"
   c.action do |args, options|
     Woody.init
-    Woody::Compiler.compile
+    Woody::Compiler.compile(options)
   end
 end
 alias_command :c, :compile
@@ -30,9 +31,10 @@ alias_command :d, :deploy
 
 command :cd do |c|
   c.description = "Compiles then deploys the site"
+  c.option "--no-add", "Don't ask to add new metadata"
   c.action do |args, options|
     Woody.init
-    Woody::Compiler.compile
+    Woody::Compiler.compile(options)
     Woody::Deployer.deploy
   end
 end

@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'mp3info'
   gem.add_runtime_dependency 'aws-s3'
   gem.add_runtime_dependency 'commander'
-  
-  # gem.post_install_message = "This update modifies default templates. Please run `woody update_templates` in your site directory to update them. Warning: this will destroy any modifications to your templates."
+  gem.add_runtime_dependency 'highline'
+
+  # gem.post_install_message = "This update modifies default templates. Please run `woody update templates` in your site directory to update them. Warning: this will destroy any modifications to your templates."
 end

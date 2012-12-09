@@ -6,7 +6,7 @@ module Woody
     # @param  [Hash] meta is the relevant part of metadata.yml
     # @return [Episode] the new Episode object
     def self.new_from_meta(filename, meta)
-      return Episode.new(filename, meta['title'], Date.parse(meta['date']), meta['synopsis'], meta['subtitle'], meta['tags'])
+      return Episode.new(filename, meta['title'], Date.parse(meta['date'].to_s), meta['synopsis'], meta['subtitle'], meta['tags'])
     end
 
     # Creates a new Episode object

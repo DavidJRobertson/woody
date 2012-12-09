@@ -3,7 +3,7 @@ module Woody
   module Compiler
 
     # Compiles the Woody site
-    def self.compile()
+    def self.compile(options = [])
       puts "Compiling..."
       meta = YAML.load_file("content/metadata.yml")
 
@@ -18,8 +18,11 @@ module Woody
           filesfound << filename
         else
           # No episode metadata stored for this yet
-
-          puts "Warning: no metadata found for file #{filename}"
+          unless options.no_add == false # Seemingly backwards, I know...
+            prompt_metadata(meta, episodes, filesfound, filename)
+          else
+            puts "Warning: found media file #{filename} but no metadata. Will not be published."
+          end
         end
       end
 
@@ -98,6 +101,33 @@ module Woody
     end
 
     private
+
+    def self.prompt_metadata(meta, episodes, filesfound, filename)
+      puts "Found new media file: #{filename}"
+      if agree("Add metadata for this file? ")
+        m = Hash.new
+        m['date']     = Time.now
+        m['title']    = ask "Title: "
+        m['subtitle'] = ask "Subtitle: "
+        m['synopsis'] = ask "Synopsis:"
+        m['tags']     = ask "Tags: ", Array
+
+        meta[filename] = m
+        episodes << Episode.new(filename,  m['title'], Date.parse(m['date'].to_s), m['synopsis'], m['subtitle'], m['tags'])
+        filesfound << filename
+
+        write_meta meta
+        puts "Saved."
+      end
+      puts # Leave a blank line
+    end
+
+    # Writes the metadata file
+    def self.write_meta(meta)
+      File.open( 'content/metadata.yml', 'w' ) do |out|
+        YAML.dump meta, out
+      end
+    end
 
     # Copies custom assets to output recursively
     def self.copy_assets_r(touchedfiles, subdir="")
