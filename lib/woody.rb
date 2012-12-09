@@ -26,7 +26,7 @@ module Woody
       $config = YAML.load_file("woody-config.yml")
     rescue Errno::ENOENT
       puts "This doesn't look like a valid Woody site directory!"
-      return
+      exit!
     end
     
     options = { 
