@@ -314,6 +314,10 @@ module Woody
 
 end
 
-  def link_to(name, url)
-    return %Q{<a href="#{url}">#{name}</a>}
-  end
+def link_to(name, url)
+  return %Q{<a href="#{url}">#{name}</a>}
+end
+
+def generator_meta_tag()
+  return %Q{<meta name="generator" content="Woody #{Woody::VERSION}" />}
+end
