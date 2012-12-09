@@ -13,7 +13,7 @@ command :compile do |c|
   c.description = "Compiles the site"
   c.action do |args, options|
     Woody.init
-    Woody.compile
+    Woody::Compiler.compile
   end
 end
 
@@ -21,7 +21,7 @@ command :deploy do |c|
   c.description = "Deploys the site"
   c.action do |args, options|
     Woody.init
-    Woody.deploy
+    Woody::Deployer.deploy
   end
 end
 
@@ -29,8 +29,8 @@ command :cd do |c|
   c.description = "Compiles then deploys the site"
   c.action do |args, options|
     Woody.init
-    Woody.compile
-    Woody.deploy
+    Woody::Compiler.compile
+    Woody::Deployer.deploy
   end
 end
 
@@ -42,7 +42,7 @@ command :new do |c|
       puts "Syntax: woody new [sitename]"
       exit!
     end
-    Woody::new_site(args[0])
+    Woody::Generator.new_site(args[0])
   end
 end
 
@@ -50,6 +50,6 @@ command :update_templates do |c|
   c.description = "Sets template files to current default. DESTRUCTIVE!"
   c.action do |args, options|
     Woody.init
-    Woody::update_templates
+    Woody::Generator.update_templates
   end
 end
