@@ -8,10 +8,10 @@ module Woody
       puts "Compiling..."
       meta = YAML.load_file("content/metadata.yml")
 		
-		# instantiate the metadata hash so shit doesn't explode in our faces
-		if meta.empty?
-			meta = Hash.new
-			
+  		# instantiate the metadata hash so shit doesn't explode in our faces
+			meta = Hash.new if meta.empty?
+
+
       episodes     = Array.new
       filesfound   = Array.new
       Dir.glob('content/*.mp3') do |file|
@@ -29,6 +29,7 @@ module Woody
           end
         end
       end
+
 
       # Check for files in meta but not found
       unless meta.empty?
