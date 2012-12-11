@@ -7,7 +7,11 @@ module Woody
     def self.compile(options = [])
       puts "Compiling..."
       meta = YAML.load_file("content/metadata.yml")
-
+		
+		# instantiate the metadata hash so shit doesn't explode in our faces
+		if meta.empty?
+			meta = Hash.new
+			
       episodes     = Array.new
       filesfound   = Array.new
       Dir.glob('content/*.mp3') do |file|
@@ -27,7 +31,7 @@ module Woody
       end
 
       # Check for files in meta but not found
-      unless meta == false
+      unless meta.empty?
         meta.each do |file|
           next if filesfound.include? file[0]
           puts "Warning: found metadata for file #{file[0]}, but file itself is missing. Will not be published."
@@ -86,7 +90,7 @@ module Woody
 
 
 
-      # Update General RSS
+      # TODO: Update General RSS
 
 
       # Purge left over files
