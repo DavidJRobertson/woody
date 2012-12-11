@@ -6,7 +6,7 @@ module Woody
     # @param  [Hash] meta is the relevant part of metadata.yml
     # @return [Episode] the new Episode object
     def self.new_from_meta(filename, meta)
-      return Episode.new(filename, meta['title'], Date.parse(meta['date'].to_s), meta['synopsis'], meta['subtitle'], meta['tags'])
+      return Episode.new(filename, meta['title'], Date.parse(meta['date'].to_s), meta['synopsis'], meta['subtitle'], meta['tags'], meta['explicit'])
     end
 
     # Creates a new Episode object
@@ -17,17 +17,18 @@ module Woody
     # @param  [String] subtitle specifies the episode's subtitle
     # @param  [Array]  tags specifies the episode's tags - each element is a String
     # @return [Episode] the new Episode object
-    def initialize(filename, title, date, synopsis, subtitle = nil, tags = [])
+    def initialize(filename, title, date, synopsis, subtitle = nil, tags = [], explicit = false)
       @filename = filename
       @title = title
       @date = date
       @synopsis = synopsis
       @subtitle = subtitle
       @tags = tags
+      @explicit = explicit
       @compiledname = @filename.gsub(/[^0-9A-Za-z .]/, '').gsub(' ', '_')
     end
 
-    attr_accessor :filename, :title, :date, :synopsis, :tags, :subtitle, :compiledname
+    attr_accessor :filename, :title, :date, :synopsis, :tags, :subtitle, :explicit, :compiledname
 
     # @return the episode's page URL where possible, otherwise false
     def url
@@ -62,7 +63,12 @@ module Woody
     def size
       File.size "content/#{filename}"
     end
-
+   
+    # @return [String] 'yes' if explicit content, otherwise n'o'
+    def explicit_string 
+      @explicit ? 'yes' : 'no'
+    end
+    
     # TODO: fix this!
     # @return [String] the duration of the media file, formatted as minutes:seconds
     def duration

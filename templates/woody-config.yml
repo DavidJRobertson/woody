@@ -17,6 +17,7 @@ itunes:
     email: owner@example.com
   # Category MUST be one of the ones listed here http://www.apple.com/itunes/podcasts/specs.html#categories
   category: Comedy
+  explicit: "yes" # yes/no/clean
   
 s3:
   # Set the relevant s3 endpoint here. For eu-west-1 (Ireland), use this default.

@@ -111,9 +111,10 @@ module Woody
         m['subtitle'] = ask "Subtitle: "
         m['synopsis'] = ask "Synopsis:"
         m['tags']     = ask "Tags: ", Array
-
+        m['explicit'] = agree "Explicit content?: "
+        
         meta[filename] = m
-        episodes << Episode.new(filename,  m['title'], Date.parse(m['date'].to_s), m['synopsis'], m['subtitle'], m['tags'])
+        episodes << Episode.new(filename,  m['title'], Date.parse(m['date'].to_s), m['synopsis'], m['subtitle'], m['tags'], m['explicit'])
         filesfound << filename
 
         write_meta meta
