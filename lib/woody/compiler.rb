@@ -1,6 +1,7 @@
 module Woody
   # Handles functions related to compiling the Woody site
   module Compiler
+    @@touchedfiles = []
 
     # Compiles the Woody site
     def self.compile(options = [])
@@ -9,7 +10,6 @@ module Woody
 
       episodes     = Array.new
       filesfound   = Array.new
-      touchedfiles = Array.new
       Dir.glob('content/*.mp3') do |file|
         filename = file[8..-1]
         unless meta == false or meta[filename].nil?
@@ -41,12 +41,11 @@ module Woody
 
       # Copy over (TODO: and process) MP3 files
       episodes.each do |episode|
-        FileUtils.copy "content/#{episode.filename}", "output/assets/mp3/#{episode.compiledname}"
-        touchedfiles << "assets/mp3/#{episode.compiledname}"
+        copy_file_to_output File.join("content", episode.filename), File.join("assets/mp3", episode.compiledname)
       end
 
       # Copy over assets
-      copy_assets_r touchedfiles
+      copy_assets
 
       # Update index.html
       layout = File.read('templates/layout.html')
@@ -59,8 +58,7 @@ module Woody
           ep.result(config: $config, episodes: episodes, episode: episode)
         end
       end
-      File.open('output/index.html', 'w') {|f| f.write(index_compiled) }
-      touchedfiles << 'index.html'
+      write_output_file('index.html') {|f| f.write(index_compiled) }
 
       # Update episode pages
       episodes.each do |episode|
@@ -70,15 +68,13 @@ module Woody
           ep = Erubis::Eruby.new(File.read('templates/episode.html'))
           ep.result(config: $config, episodes: episodes, episode: episode)
         end
-        File.open("output/#{episode.path(false)}", 'w') {|f| f.write(episode_compiled) }
-        touchedfiles << episode.path(false)
+        write_output_file(episode.path) {|f| f.write(episode_compiled) }
       end
 
       # Copy over iTunes.png
-      if File.exist? "content/iTunes.png"
-        FileUtils.copy "content/iTunes.png", "output/assets/iTunes.png"
-        touchedfiles << "assets/iTunes.png"
-      else
+      begin
+        copy_file_to_output "content/iTunes.png", "assets/iTunes.png"
+      rescue Errno::ENOENT
         puts "Warning: content/iTunes.png missing!"
       end
 
@@ -86,15 +82,15 @@ module Woody
       itunes = File.read "#{$source_root}/itunes.xml" # Use itunes.xml template in gem, not in site's template folder.
       itunes = Erubis::Eruby.new(itunes)
       itunes_compiled = itunes.result(config: $config, episodes: episodes)
-      File.open("output/itunes.xml", 'w') {|f| f.write(itunes_compiled) }
-      touchedfiles << "itunes.xml"
+      write_output_file("itunes.xml") {|f| f.write(itunes_compiled) }
+
 
 
       # Update General RSS
 
 
       # Purge left over files
-      purge_output(touchedfiles)
+      purge_output
 
       # Remove all empty directories from the output
       Dir['output/**/*'].select { |d| File.directory? d }.select { |d| (Dir.entries(d) - %w[ . .. ]).empty? }.each { |d| Dir.rmdir d }
@@ -102,6 +98,23 @@ module Woody
 
     private
 
+    # Safely copies files to the output directory
+    def self.copy_file_to_output(source, destination)
+      d = File.join("output", destination)
+      FileUtils.copy source, d
+      @@touchedfiles << d
+    end
+
+    # Safely writes files to the output directory
+    def self.write_output_file(filename, &block)
+      file = File.join("output", filename)
+      File.open(file, 'w') do |f|
+        yield f
+      end
+      @@touchedfiles << file
+    end
+
+    # Prompts for metadata for new media files
     def self.prompt_metadata(meta, episodes, filesfound, filename)
       puts "Found new media file: #{filename}"
       if agree("Add metadata for this file? ")
@@ -129,33 +142,23 @@ module Woody
       end
     end
 
-    # Copies custom assets to output recursively
-    def self.copy_assets_r(touchedfiles, subdir="")
-      Dir.foreach("templates/assets/#{subdir}") do |item|
-        next if item == '.' or item == '..'
-        unless File.directory?("templates/assets/#{subdir}#{item}")
-          FileUtils.copy "templates/assets/#{subdir}#{item}", "output/assets/#{subdir}#{item}"
-          touchedfiles << "assets/#{subdir}#{item}"
-        else
-          FileUtils.mkdir_p "output/assets/#{subdir}#{item}"
-          copy_assets_r touchedfiles, "#{subdir}#{item}/"
-        end
+    # Copies custom assets to output
+    def self.copy_assets
+      Dir.glob "templates/assets/**/*" do |item|
+        next if File.directory? item
+        d = item[10..-1] # Cut off "templates/" at beginning
+        copy_file_to_output item, d
       end
     end
 
+
     # Deletes old files from the site's output directory
-    # @param [Array]  touchedfiles specifies which files to keep
-    # @param [String] subdir specifies a subdirectory of output/ to work in (used for recursion)
-    def self.purge_output(touchedfiles, subdir = "")
-      Dir.foreach("output/#{subdir}") do |item|
-        next if item == '.' or item == '..'
-        p = "#{subdir}#{item}"
-        begin
-          File.delete "output/#{subdir}#{item}" unless touchedfiles.include? p
-        rescue Errno::EISDIR, Errno::EPERM # Rescuing EPERM seems to be necessary on macs, hmm :/
-          purge_output touchedfiles, "#{p}/"
-        end
+    def self.purge_output
+      Dir.glob "output/**/*" do |item|
+        next if File.directory? item
+        File.delete item unless @@touchedfiles.include? item
       end
     end
+
   end
 end
