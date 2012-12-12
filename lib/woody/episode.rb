@@ -61,7 +61,7 @@ module Woody
 
     # @return [Integer] the size of the episodes media file in bytes
     def size
-      File.size "content/#{filename}"
+      File.size File.join("content", filename)
     end
    
     # @return [String] 'yes' if explicit content, otherwise n'o'
@@ -73,13 +73,17 @@ module Woody
     def duration
       return @duration unless @duration.nil?
       length = 0
-      Mp3Info.open("content/#{@filename}") do |mp3|
+      Mp3Info.open(File.join("content", filename)) do |mp3|
         length = mp3.length
       end
       @duration = Time.at(length).gmtime.strftime('%R:%S') # Should work up to 24 hours
       if @duration.start_with? "00:"
         @duration = @duration[3..-1]
       end
+    end
+
+    def <=> (other)
+      other.date <=> self.date
     end
 
   end

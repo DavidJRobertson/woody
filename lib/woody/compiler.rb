@@ -32,6 +32,7 @@ module Woody
         end
       end
 
+      episodes.sort!
 
       # Check for files in meta but not found
       unless meta.empty?
