@@ -84,6 +84,7 @@ module Woody
       end
 
       # Update iTunes RSS
+      $config['itunes']['explicit'] = "no" if $config['itunes']['explicit'].nil?
       itunes = File.read "#{$source_root}/itunes.xml" # Use itunes.xml template in gem, not in site's template folder.
       itunes = Erubis::Eruby.new(itunes)
       itunes_compiled = itunes.result(config: $config, episodes: episodes)
