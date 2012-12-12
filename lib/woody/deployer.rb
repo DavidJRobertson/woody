@@ -24,7 +24,14 @@ module Woody
     def self.purge_bucket
       bucket = AWS::S3::Bucket.find $bucketname
       bucket.objects.each do |object|
-        object.delete unless @@touchedfiles.include? object.key
+        prefix = $config['s3']['prefix']
+        if prefix.nil?
+          object.delete unless @@touchedfiles.include? object.key
+        else
+          if object.key.start_with? prefix # If using a prefix, don't delete anything outside of that 'subdirectory'
+            object.delete unless @@touchedfiles.include? object.key
+          end
+        end
       end
     end
 
@@ -36,6 +43,11 @@ module Woody
     # @param [String] objectname specifies the S3 object's key/name
     # @param [String] filepath specifies the path to the file to upload
     def self.upload(objectname, filepath)
+      prefix = $config['s3']['prefix']
+      unless prefix.nil?
+        objectname = File.join(prefix, objectname)
+      end
+
       # Generate hash of file
       hash = filehash filepath
       @@touchedfiles << objectname
