@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
 <channel>
     <title><%= config['title'] %></title>
     <link><%= config['urlbase'] %></link>
@@ -19,9 +19,11 @@
    
     <itunes:image href="<%= $config['urlbase'] + "/assets/iTunes.png" %>"/>
     <itunes:category text="<%= $config['itunes']['category'] %>"/>
-    
-    
-    <%- episodes.each do |episode| %>
+
+    <atom:link href="<%= $config['urlbase'] %>/feed.xml" rel="self" type="application/rss+xml" />
+
+
+  <%- episodes.each do |episode| %>
     <item>
       <title><%= episode.title %></title>
       <itunes:subtitle><%= episode.subtitle %></itunes:subtitle>
