@@ -69,7 +69,6 @@ module Woody
       @explicit ? 'yes' : 'no'
     end
     
-    # TODO: fix this!
     # @return [String] the duration of the media file, formatted as minutes:seconds
     def duration
       return @duration unless @duration.nil?
@@ -77,10 +76,10 @@ module Woody
       Mp3Info.open("content/#{@filename}") do |mp3|
         length = mp3.length
       end
-      length = length.to_i
-      seconds = length % 60
-      minutes = (length / 60).floor
-      @duration = "#{minutes}:#{seconds}"
+      @duration = Time.at(length).gmtime.strftime('%R:%S') # Should work up to 24 hours
+      if @duration.start_with? "00:"
+        @duration = @duration[3..-1]
+      end
     end
 
   end

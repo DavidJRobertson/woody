@@ -22,6 +22,7 @@ itunes:
 s3:
   # Set the relevant s3 endpoint here. For eu-west-1 (Ireland), use this default.
   hostname: s3-eu-west-1.amazonaws.com
+  #prefix: podcast # Uncomment this to upload in a 'subdirectory' of the S3 bucket?
   accesskey:
     id: your-aws-access-key-id
     secret: your-aws-access-key-secret
