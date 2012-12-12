@@ -83,11 +83,11 @@ module Woody
         puts "Warning: content/iTunes.png missing!"
       end
 
-      # Update iTunes RSS
-      itunes = File.read "#{$source_root}/itunes.xml" # Use itunes.xml template in gem, not in site's template folder.
-      itunes = Erubis::Eruby.new(itunes)
-      itunes_compiled = itunes.result(config: $config, episodes: episodes)
-      write_output_file("itunes.xml") {|f| f.write(itunes_compiled) }
+      # Update (iTunes) RSS
+      feedxml = File.read "#{$source_root}/feed.xml" # Use feed.xml template in gem, not in site's template folder.
+      feed = Erubis::Eruby.new(feedxml)
+      feed_compiled = feed.result(config: $config, episodes: episodes)
+      write_output_file("feed.xml") {|f| f.write(feed_compiled) }
 
 
 
