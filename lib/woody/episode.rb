@@ -82,12 +82,6 @@ module Woody
       minutes = (length / 60).floor
       @duration = "#{minutes}:#{seconds}"
     end
-    
-    # @return [Integer] the size of the podcast episode in bytes
-    def filesize
-       # TODO
-       return 1024
-    end
 
   end
 end

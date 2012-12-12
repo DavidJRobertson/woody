@@ -2,7 +2,6 @@
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
 <channel>
     <title><%= config['title'] %></title>
-    <description><%= config['itunes']['summary'] %></description>
     <link><%= config['urlbase'] %></link>
     <language><%= config['lang'] %></language>
     
@@ -27,12 +26,12 @@
       <title><%= episode.title %></title>
       <itunes:subtitle><%= episode.subtitle %></itunes:subtitle>
       <itunes:summary><%= episode.synopsis %></itunes:summary>
-      <enclosure url="<%= episode.file_url %>" length="<%= episode.size %>" type="audio/mpeg"/>
       <pubDate><%= episode.date.rfc2822 %></pubDate>
       <itunes:duration><%= episode.duration %></itunes:duration>
       <itunes:keywords><%= episode.keywords %></itunes:keywords>
       <itunes:explicit><%= episode.explicit_string %></itunes:explicit>
-      <enclosure url="<%= episode.file_url %>" length="<%= episode.filesize %>" type="audio/mpeg"/>
+      <description><%= episode.synopsis %></description>
+  		<enclosure url="<%= episode.file_url %>" length="<%= episode.size %>" type="audio/mpeg"/>
       <guid><%= episode.url %></guid>
       <category>Podcasts</category>
     </item>

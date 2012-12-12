@@ -9,8 +9,10 @@ module Woody
       meta = YAML.load_file("content/metadata.yml")
 		
   		# instantiate the metadata hash so shit doesn't explode in our faces
-			meta = Hash.new if meta.empty?
-
+  		# WEIRD SHIT: used .empty? here before but fails if used on hash seemingly
+		if meta == false
+			meta = Hash.new 
+		end
 
       episodes     = Array.new
       filesfound   = Array.new
