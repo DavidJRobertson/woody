@@ -9,8 +9,13 @@ module Woody
       Dir.glob "output/**/*" do |item|
         next if File.directory? item
         name = item[7..-1] # Remove "output/"
+        next if name == "index.html" # These *must* be left until last
+        next if name == "feed.xml"
         upload name, item
       end
+
+      upload "index.html", "output/index.html"
+      upload "feed.xml", "output/feed.xml"
 
       # Purge left over files
       purge_bucket
