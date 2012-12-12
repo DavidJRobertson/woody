@@ -32,27 +32,42 @@ module Woody
 
     # @return the episode's page URL where possible, otherwise false
     def url
-      return "#{$config['urlbase']}#{path}" unless path == false
+      return "#{$config['urlbase']}#{path!}" unless path! == false
       return false
     end
 
-    # @return the episode's page path where possible, otherwise false
-    def path(leader=true)
+    # @return the episode's page path! where possible, otherwise false. Does not take prefix in to account.
+    def path!(leader=true)
       return "#{leader ? "/" : ""}episode/#{@compiledname[0..-5]}.html" unless @compiledname.nil?
+      return false
+    end
+
+    # @return the episode's page path! where possible, otherwise false. Includes the site prefix if enabled.
+    def path(leader=true)
+      prefix = $config['s3']['prefix']
+      return "#{leader ? "/" : ""}#{prefix.nil? ? "" : prefix + "/" }episode/#{@compiledname[0..-5]}.html" unless @compiledname.nil?
       return false
     end
 
     # @return the episode's media file URL where possible, otherwise false
     def file_url
-      return "#{$config['urlbase']}#{file_path}" unless file_path == false
+      return "#{$config['urlbase']}#{file_path!}" unless file_path! == false
       return false
     end
 
-    # @return the episode's media file path where possible, otherwise false
-    def file_path(leader=true)
+    # @return the episode's media file path! where possible, otherwise false. Does not take prefix in to account.
+    def file_path!(leader=true)
       return "#{leader ? "/" : ""}assets/mp3/#{@compiledname}" unless @compiledname.nil?
       return false
     end
+
+    # @return the episode's media file path! where possible, otherwise false. Includes site prefix if enabled.
+    def file_path(leader=true)
+      prefix = $config['s3']['prefix']
+      return "#{leader ? "/" : ""}#{prefix.nil? ? "" : prefix + "/" }assets/mp3/#{@compiledname}" unless @compiledname.nil?
+      return false
+    end
+
 
     # @return [String] a comma separated list of tags, or nil if no tags
     def keywords

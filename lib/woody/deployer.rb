@@ -28,11 +28,13 @@ module Woody
     # @param [Array] touchedfiles specifies the S3 objects to keep
     def self.purge_bucket
       bucket = AWS::S3::Bucket.find $bucketname
-      bucket.objects.each do |object|
-        prefix = $config['s3']['prefix']
-        if prefix.nil?
+      prefix = $config['s3']['prefix']
+      if prefix.nil?
+        bucket.objects.each do |object|
           object.delete unless @@touchedfiles.include? object.key
-        else
+        end
+      else
+        bucket.objects.each do |object|
           if object.key.start_with? prefix # If using a prefix, don't delete anything outside of that 'subdirectory'
             object.delete unless @@touchedfiles.include? object.key
           end

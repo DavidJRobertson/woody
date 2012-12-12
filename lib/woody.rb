@@ -31,7 +31,19 @@ module Woody
       puts "This doesn't look like a valid Woody site directory!"
       exit!
     end
-    
+
+    # Strip trailing slash from urlbase, if present.
+    if $config['urlbase'].end_with? "/"
+      $config['urlbase'] = $config['urlbase'][0..-2]
+    end
+
+    if $config['distributiontype'] == "s3"
+      prefix = $config['s3']['prefix']
+      unless prefix.nil?
+        $config['urlbase'] = $config['urlbase'] + "/" + prefix
+      end
+    end
+
     options = { 
       :access_key_id     => $config['s3']['accesskey']['id'], 
       :secret_access_key => $config['s3']['accesskey']['secret']

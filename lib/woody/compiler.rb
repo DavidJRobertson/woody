@@ -10,9 +10,9 @@ module Woody
 		
   		# instantiate the metadata hash so shit doesn't explode in our faces
   		# WEIRD SHIT: used .empty? here before but fails if used on hash seemingly
-		if meta == false
-			meta = Hash.new 
-		end
+      if meta == false
+        meta = Hash.new
+      end
 
       episodes     = Array.new
       filesfound   = Array.new
@@ -76,7 +76,7 @@ module Woody
           ep = Erubis::Eruby.new(File.read('templates/episode.html'))
           ep.result(config: $config, episodes: episodes, episode: episode)
         end
-        write_output_file(episode.path) {|f| f.write(episode_compiled) }
+        write_output_file(episode.path!) {|f| f.write(episode_compiled) }
       end
 
       # Copy over iTunes.png
