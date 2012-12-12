@@ -9,8 +9,10 @@ module Woody
       meta = YAML.load_file("content/metadata.yml")
 		
   		# instantiate the metadata hash so shit doesn't explode in our faces
-			meta = Hash.new if meta.empty?
-
+  		# WEIRD SHIT: used .empty? here before but fails if used on hash seemingly
+		if meta == false
+			meta = Hash.new 
+		end
 
       episodes     = Array.new
       filesfound   = Array.new
@@ -83,12 +85,12 @@ module Woody
         puts "Warning: content/iTunes.png missing!"
       end
 
-      # Update iTunes RSS
+      # Update (iTunes) RSS
       $config['itunes']['explicit'] = "no" if $config['itunes']['explicit'].nil?
-      itunes = File.read "#{$source_root}/itunes.xml" # Use itunes.xml template in gem, not in site's template folder.
-      itunes = Erubis::Eruby.new(itunes)
-      itunes_compiled = itunes.result(config: $config, episodes: episodes)
-      write_output_file("itunes.xml") {|f| f.write(itunes_compiled) }
+      feedxml = File.read File.join($source_root, "feed.xml") # Use feed.xml template in gem, not in site's template folder.
+      feed = Erubis::Eruby.new(feedxml)
+      feed_compiled = feed.result(config: $config, episodes: episodes)
+      write_output_file("feed.xml") {|f| f.write(feed_compiled) }
 
 
 

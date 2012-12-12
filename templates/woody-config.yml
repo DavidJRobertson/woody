@@ -1,29 +1,93 @@
-title: Title
-subtitle: Subtitle
-author: Author
+#############################################################
+#                                                           #
+#                                         dP      ALPHA     #
+#                                         88                #
+#      dP  dP  dP .d8888b. .d8888b. .d888b88 dP    dP       #
+#      88  88  88 88'  `88 88'  `88 88'  `88 88    88       #
+#      88.88b.88' 88.  .88 88.  .88 88.  .88 88.  .88       #
+#      8888P Y8P  `88888P' `88888P' `88888P8 `8888P88       #
+#                                                 .88       #
+#                                              d8888P       #
+#                                                           #
+#############################################################
+#                                                           #
+#  Welcome to Woody, the best way to generate iTunes-ready  #
+#  podcast feeds and websites!                              #
+#                                                           #
+#  To get started, please fill out this wee config file,    #
+#  drop some mp3s in the content folder and run:            #
+#                                                           #
+#  $ woody compile                                          #
+#                                                           #
+#  To build and compile your site! For more help see the    #
+#  readme included. Have fun!                               #
+#                                                           #
+#  Visit us on github - github.com/davidjrobertson/woody    #
+#                                                           #
+#############################################################
 
-# Include http://, domain name, but *NO trailing slash*
-urlbase: http://example.com
+################
+#  BASIC INFO  #
+################
+
+#  Title and subtitle of your podcast 
+title: David's World of Spoons
+subtitle: From Teaspoons to Ladels
+
+#  A short description of your podcast. (Also used for iTunes)
+summary: Hey there. I'm David, and this is my amazing world of spoons and other crockery!
+
+#  The name of the podcast's author
+author: David "Spoonmad" Hewitson
+
+#  Primary language of the podcast - please see http://www.w3.org/WAI/ER/IG/ert/iso639.htm
+lang: en 
+
+#  Base URL of the podcast - used to generate links
+urlbase: http://example.com 
+
+#######################
+#  ID3 CONFIGURATION  #
+#######################
 
 mp3:
-  # NOT YET IMPLEMENTED! Do you want to have ID3v2 tags for artist/title automatically set? N.B., may be truncated.
+  #  NYI! Do you want to have ID3v2 tags for artist/title automatically set? N.B., may be truncated.
   setartist: true
   settitle:  true
 
+##########################
+#  ITUNES-SPECIFIC INFO  #
+##########################
+
 itunes:
-  summary: iTunes Summary
+  #  Full name and email address of podcast owner 
   owner: 
     name: Owner
     email: owner@example.com
-  # Category MUST be one of the ones listed here http://www.apple.com/itunes/podcasts/specs.html#categories
+    
+  # One of the categories listed here: http://www.apple.com/itunes/podcasts/specs.html#categories
   category: Comedy
-  explicit: "no" # yes/no/clean
   
+  #  Is the podcast explicit? (yes/no/clean) You can type 'clean' to have your
+  #  podcast show up with a 'clean' icon in iTunes search results
+  explicit: "no"
+
+###############################
+#  DISTRIBUTION CONFIGURATION #
+###############################
+
+# NOTE: currently only Amazon S3 (AWS) is available - more soon!
+
+distributiontype: s3
+
 s3:
-  # Set the relevant s3 endpoint here. For eu-west-1 (Ireland), use this default.
+  #  Set the relevant s3 endpoint here. For eu-west-1 (Ireland), use this default.
   hostname: s3-eu-west-1.amazonaws.com
   #prefix: podcast # Uncomment this to upload in a 'subdirectory' of the S3 bucket?
   accesskey:
+    #  Your AWS access key and secret
     id: your-aws-access-key-id
     secret: your-aws-access-key-secret
+    
+  #  The bucket the podcast site should be uploaded to
   bucket: example.com
