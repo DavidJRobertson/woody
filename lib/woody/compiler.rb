@@ -67,9 +67,6 @@ module Woody
 
       # Copy over (TODO: and process) MP3 files
       posts.each do |post|
-        puts "#{post.title} - #{post.has_file?}"
-        next unless post.has_file?
-        puts "copying above thing"
         copy_file_to_output File.join("content", post.filename), File.join("assets/mp3", post.compiledname)
       end
 
