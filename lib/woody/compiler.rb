@@ -1,3 +1,5 @@
+require 'preamble'
+
 module Woody
   # Handles functions related to compiling the Woody site
   module Compiler
@@ -14,25 +16,42 @@ module Woody
         meta = Hash.new
       end
 
-      episodes     = Array.new
-      filesfound   = Array.new
+      posts      = Array.new
+      filesfound = Array.new
       Dir.glob('content/*.mp3') do |file|
         filename = file[8..-1]
         unless meta == false or meta[filename].nil?
           # Episode metadata already stored
-          episodes   << Episode.new_from_meta(filename, meta[filename])
+          posts      << Episode.new_from_meta(filename, meta[filename])
           filesfound << filename
         else
           # No episode metadata stored for this yet
           unless options.no_add == false # Seemingly backwards, I know...
-            prompt_metadata(meta, episodes, filesfound, filename)
+            prompt_metadata(meta, posts, filesfound, filename)
           else
             puts "Warning: found media file #{filename} but no metadata. Will not be published."
           end
         end
       end
 
-      episodes.sort!
+      # Process blog posts
+      Dir.glob('content/posts/*') do |file|
+        filename = file[8..-1]
+
+        data = Preamble.load(file)
+        meta = data[0]
+        body = data[1]
+
+        #TODO: process body data. Markdown?
+
+        posts << Post.new(filename, meta['title'], meta['subtitle'], body, Date.parse(meta['date'].to_s), meta['tags'])
+        puts file
+      end
+
+      posts.sort_by! do |post|
+        puts post.title
+        post.date
+      end.reverse!
 
       # Check for files in meta but not found
       unless meta.empty?
@@ -45,11 +64,11 @@ module Woody
       # Make sure necessary directories exist
       FileUtils.mkdir_p('output/assets') unless File.directory?('output/assets')
       FileUtils.mkdir_p('output/assets/mp3') unless File.directory?('output/assets/mp3')
-      FileUtils.mkdir_p('output/episode') unless File.directory?('output/episode')
+      FileUtils.mkdir_p('output/post') unless File.directory?('output/post')
 
       # Copy over (TODO: and process) MP3 files
-      episodes.each do |episode|
-        copy_file_to_output File.join("content", episode.filename), File.join("assets/mp3", episode.compiledname)
+      posts.each do |post|
+        copy_file_to_output File.join("content", post.filename), File.join("assets/mp3", post.compiledname)
       end
 
       # Copy over assets
@@ -59,24 +78,24 @@ module Woody
       layout = File.read('templates/layout.html')
       layout = Erubis::Eruby.new(layout)
 
-      index_compiled = layout.result(config: $config, episodes: episodes) do
+      index_compiled = layout.result(config: $config) do
         index = Erubis::Eruby.new(File.read('templates/index.html'))
-        index.result(config: $config, episodes: episodes, test: "hello, world") do |episode|
-          ep = Erubis::Eruby.new(File.read('templates/episode.html'))
-          ep.result(config: $config, episodes: episodes, episode: episode)
+        index.result(config: $config, posts: posts) do |post|
+          ep = Erubis::Eruby.new(File.read('templates/post.html'))
+          ep.result(config: $config, posts: posts, post: post)
         end
       end
       write_output_file('index.html') {|f| f.write(index_compiled) }
 
-      # Update episode pages
-      episodes.each do |episode|
+      # Update post pages
+      posts.each do |post|
         layout = File.read('templates/layout.html')
         layout = Erubis::Eruby.new(layout)
-        episode_compiled = layout.result(config: $config, episodes: episodes) do
-          ep = Erubis::Eruby.new(File.read('templates/episode.html'))
-          ep.result(config: $config, episodes: episodes, episode: episode)
+        post_compiled = layout.result(config: $config) do
+          ep = Erubis::Eruby.new(File.read('templates/post.html'))
+          ep.result(config: $config, posts: posts, post: post)
         end
-        write_output_file(episode.path!) {|f| f.write(episode_compiled) }
+        write_output_file(post.path!) {|f| f.write(post_compiled) }
       end
 
       # Copy over iTunes.png
@@ -90,7 +109,7 @@ module Woody
       $config['itunes']['explicit'] = "no" if $config['itunes']['explicit'].nil?
       feedxml = File.read File.join($source_root, "feed.xml") # Use feed.xml template in gem, not in site's template folder.
       feed = Erubis::Eruby.new(feedxml)
-      feed_compiled = feed.result(config: $config, episodes: episodes)
+      feed_compiled = feed.result(config: $config, posts: posts)
       write_output_file("feed.xml") {|f| f.write(feed_compiled) }
 
 
@@ -124,7 +143,7 @@ module Woody
     end
 
     # Prompts for metadata for new media files
-    def self.prompt_metadata(meta, episodes, filesfound, filename)
+    def self.prompt_metadata(meta, posts, filesfound, filename)
       puts "Found new media file: #{filename}"
       if agree("Add metadata for this file? ")
         m = Hash.new
@@ -136,7 +155,7 @@ module Woody
         m['explicit'] = agree "Explicit content?: "
         
         meta[filename] = m
-        episodes << Episode.new(filename,  m['title'], Date.parse(m['date'].to_s), m['synopsis'], m['subtitle'], m['tags'], m['explicit'])
+        posts << Episode.new(filename,  m['title'], Date.parse(m['date'].to_s), m['synopsis'], m['subtitle'], m['tags'], m['explicit'])
         filesfound << filename
 
         write_meta meta

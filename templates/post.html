@@ -1,0 +1,19 @@
+<h3><%= link_to post.title, post.path %></h3>
+<h4><%= post.subtitle %></h4>
+
+<%- if post.has_file? %>
+Player goes here
+
+<a href="<%= post.file_path %>">Download MP3</a>
+<% end %>
+
+<div class="synopsis body">
+  <%= post.body %>
+</div>
+
+<div class="tags">
+  <strong>Tags:</strong>
+  <% post.tags.each do |tag| %>
+    <span class="tag"><%= tag %> </span>
+  <% end %>
+</div>

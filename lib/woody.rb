@@ -1,4 +1,5 @@
 require "woody/version"
+require "woody/post"
 require "woody/episode"
 require "woody/compiler"
 require "woody/deployer"

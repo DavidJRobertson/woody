@@ -1,6 +1,8 @@
+require "woody/post"
+
 module Woody
-  # Represents an episode of the podcast
-  class Episode
+  # Represents an episode of the podcast. Inherits from Post.
+  class Episode < Post
     # Creates a new Episode object from segment of metadata.yml
     # @param  [String] filename specifies the name of the MP3 file
     # @param  [Hash] meta is the relevant part of metadata.yml
@@ -13,41 +15,17 @@ module Woody
     # @param  [String] filename specifies the name of the MP3 file
     # @param  [String] title specifies the episode's title
     # @param  [Date]   date specifies the episode's published date
-    # @param  [String] synopsis specifies the episode's synopsis
+    # @param  [String] body specifies the episode's synopsis/body
     # @param  [String] subtitle specifies the episode's subtitle
     # @param  [Array]  tags specifies the episode's tags - each element is a String
     # @return [Episode] the new Episode object
-    def initialize(filename, title, date, synopsis, subtitle = nil, tags = [], explicit = false)
-      @filename = filename
-      @title = title
-      @date = date
-      @synopsis = synopsis
-      @subtitle = subtitle
-      @tags = tags
+    def initialize(filename, title, date, body, subtitle = nil, tags = [], explicit = false)
+      super filename, title, subtitle, body, date, tags
       @explicit = explicit
-      @compiledname = @filename.gsub(/[^0-9A-Za-z .]/, '').gsub(' ', '_')
     end
 
-    attr_accessor :filename, :title, :date, :synopsis, :tags, :subtitle, :explicit, :compiledname
+    attr_accessor :explicit
 
-    # @return the episode's page URL where possible, otherwise false
-    def url
-      return "#{$config['urlbase']}#{path!}" unless path! == false
-      return false
-    end
-
-    # @return the episode's page path! where possible, otherwise false. Does not take prefix in to account.
-    def path!(leader=true)
-      return "#{leader ? "/" : ""}episode/#{@compiledname[0..-5]}.html" unless @compiledname.nil?
-      return false
-    end
-
-    # @return the episode's page path! where possible, otherwise false. Includes the site prefix if enabled.
-    def path(leader=true)
-      prefix = $config['s3']['prefix']
-      return "#{leader ? "/" : ""}#{prefix.nil? ? "" : prefix + "/" }episode/#{@compiledname[0..-5]}.html" unless @compiledname.nil?
-      return false
-    end
 
     # @return the episode's media file URL where possible, otherwise false
     def file_url
@@ -69,17 +47,13 @@ module Woody
     end
 
 
-    # @return [String] a comma separated list of tags, or nil if no tags
-    def keywords
-      @tags.join ', ' unless @tags.nil? or @tags.empty?
-    end
 
     # @return [Integer] the size of the episodes media file in bytes
     def size
       File.size File.join("content", filename)
     end
    
-    # @return [String] 'yes' if explicit content, otherwise n'o'
+    # @return [String] 'yes' if explicit content, otherwise 'no'
     def explicit_string 
       @explicit ? 'yes' : 'no'
     end
@@ -97,8 +71,9 @@ module Woody
       end
     end
 
-    def <=> (other)
-      other.date <=> self.date
+
+    def has_file?
+      true
     end
 
   end
