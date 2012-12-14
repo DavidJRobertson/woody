@@ -16,7 +16,7 @@ module Woody
       @body = body
       @date = date
       @tags = tags.nil? ? [] : tags
-      @compiledname = @filename.gsub(/[^0-9A-Za-z .]/, '').gsub(' ', '_')
+      @compiledname = @filename[6..-1].gsub(/[^0-9A-Za-z ._]/, '').gsub(' ', '_')
     end
     attr_accessor :filename, :title, :subtitle, :body, :date, :tags, :compiledname
 

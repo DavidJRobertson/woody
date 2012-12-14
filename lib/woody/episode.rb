@@ -22,6 +22,7 @@ module Woody
     def initialize(filename, title, date, body, subtitle = nil, tags = [], explicit = false)
       super filename, title, subtitle, body, date, tags
       @explicit = explicit
+      @compiledname = @filename.gsub(/[^0-9A-Za-z ._]/, '').gsub(' ', '_')
     end
 
     attr_accessor :explicit
