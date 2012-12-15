@@ -11,7 +11,7 @@ program :description, 'Podcast static site generator'
 default_command :compile
 
 $dir = "."
-global_option '-d', '-d path/to/site', "Specifies path to Woody site directory, if not the current directory" do |dir|
+global_option '--dir', '--dir path/to/site', "Specifies path to Woody site directory, if not the current directory" do |dir|
   $dir = dir
   puts $dir
 end
