@@ -23,6 +23,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'commander'
   gem.add_runtime_dependency 'highline'
   gem.add_runtime_dependency 'preamble'
+  gem.add_runtime_dependency 'kramdown'
 
   # gem.post_install_message = "This update modifies default templates. Please run `woody update templates` in your site directory to update them. Warning: this will destroy any modifications to your templates."
 end
