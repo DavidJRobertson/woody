@@ -37,7 +37,7 @@ class Woody
     end
 
     # Replaces the templates in the Woody site with the gem's current default ones
-    def self.update_templates
+    def update_templates
       puts "Updating templates..."
       cpy_t("layout.html", "templates/layout.html")
       cpy_t("index.html", "templates/index.html")
@@ -50,7 +50,7 @@ class Woody
 
     # Creates a directory and its parents if necessary, outputting a notice to STDOUT
     # @param [String] dir specifies the directory to create
-    def self.cdir_p(dir)
+    def cdir_p(dir)
       puts "Creating directory '#{dir}'"
       FileUtils.mkdir_p(dir)
     end
@@ -58,7 +58,7 @@ class Woody
     # Copies a file from inside the gem's template directory, to a location in the current Woody site., outputting a notice to STDOUT.
     # @param [String] source specificies the source file (inside the gem's internal template directory)
     # @param [String] destination specidies the destination (inside the Woody site's root directory)
-    def self.cpy_t(source, destination)
+    def cpy_t(source, destination)
       puts "Creating file '#{destination}'"
       FileUtils.cp File.join($source_root, source), destination
     end

@@ -6,15 +6,13 @@ class Woody
     @@touchedfiles = []
 
     # Compiles the Woody site
-    def self.compile(options = [])
+    def compile(options = nil)
       puts "Compiling..."
       meta = YAML.load_file("content/metadata.yml")
 		
   		# instantiate the metadata hash so shit doesn't explode in our faces
-  		# WEIRD SHIT: used .empty? here before but fails if used on hash seemingly
-      if meta == false
-        meta = Hash.new
-      end
+      meta = Hash.new if meta == false
+
 
       posts      = Array.new
       filesfound = Array.new
@@ -22,11 +20,11 @@ class Woody
         filename = file[8..-1]
         unless meta == false or meta[filename].nil?
           # Episode metadata already stored
-          posts      << Episode.new_from_meta(filename, meta[filename])
+          posts      << Episode.new_from_meta(self, filename, meta[filename])
           filesfound << filename
         else
           # No episode metadata stored for this yet
-          unless options.no_add == false # Seemingly backwards, I know...
+          unless options.nil? or options.no_add == false # Seemingly backwards, I know...
             prompt_metadata(meta, posts, filesfound, filename)
           else
             puts "Warning: found media file #{filename} but no metadata. Will not be published."
@@ -44,7 +42,7 @@ class Woody
 
         #TODO: process body data. Markdown?
 
-        posts << Post.new(filename, meta['title'], meta['subtitle'], body, Date.parse(meta['date'].to_s), meta['tags'])
+        posts << Post.new(self, filename, meta['title'], meta['subtitle'], body, Date.parse(meta['date'].to_s), meta['tags'])
         puts file
       end
 
@@ -77,11 +75,11 @@ class Woody
       layout = File.read('templates/layout.html')
       layout = Erubis::Eruby.new(layout)
 
-      index_compiled = layout.result(config: $config) do
+      index_compiled = layout.result(config: @config) do
         index = Erubis::Eruby.new(File.read('templates/index.html'))
-        index.result(config: $config, posts: posts) do |post|
+        index.result(config: @config, posts: posts) do |post|
           ep = Erubis::Eruby.new(File.read('templates/post.html'))
-          ep.result(config: $config, posts: posts, post: post)
+          ep.result(config: @config, posts: posts, post: post)
         end
       end
       write_output_file('index.html') {|f| f.write(index_compiled) }
@@ -90,9 +88,9 @@ class Woody
       posts.each do |post|
         layout = File.read('templates/layout.html')
         layout = Erubis::Eruby.new(layout)
-        post_compiled = layout.result(config: $config) do
+        post_compiled = layout.result(config: @config) do
           ep = Erubis::Eruby.new(File.read('templates/post.html'))
-          ep.result(config: $config, posts: posts, post: post)
+          ep.result(config: @config, posts: posts, post: post)
         end
         write_output_file(post.path!) {|f| f.write(post_compiled) }
       end
@@ -105,10 +103,10 @@ class Woody
       end
 
       # Update (iTunes) RSS
-      $config['itunes']['explicit'] = "no" if $config['itunes']['explicit'].nil?
+      @config['itunes']['explicit'] = "no" if @config['itunes']['explicit'].nil?
       feedxml = File.read File.join($source_root, "feed.xml") # Use feed.xml template in gem, not in site's template folder.
       feed = Erubis::Eruby.new(feedxml)
-      feed_compiled = feed.result(config: $config, posts: posts)
+      feed_compiled = feed.result(config: @config, posts: posts)
       write_output_file("feed.xml") {|f| f.write(feed_compiled) }
 
 
@@ -126,14 +124,14 @@ class Woody
     private
 
     # Safely copies files to the output directory
-    def self.copy_file_to_output(source, destination)
+    def copy_file_to_output(source, destination)
       d = File.join("output", destination)
       FileUtils.copy source, d
       @@touchedfiles << d
     end
 
     # Safely writes files to the output directory
-    def self.write_output_file(filename, &block)
+    def write_output_file(filename, &block)
       file = File.join("output", filename)
       File.open(file, 'w') do |f|
         yield f
@@ -142,7 +140,7 @@ class Woody
     end
 
     # Prompts for metadata for new media files
-    def self.prompt_metadata(meta, posts, filesfound, filename)
+    def prompt_metadata(meta, posts, filesfound, filename)
       puts "Found new media file: #{filename}"
       if agree("Add metadata for this file? ")
         m = Hash.new
@@ -154,7 +152,7 @@ class Woody
         m['explicit'] = agree "Explicit content?: "
         
         meta[filename] = m
-        posts << Episode.new(filename,  m['title'], Date.parse(m['date'].to_s), m['synopsis'], m['subtitle'], m['tags'], m['explicit'])
+        posts << Episode.new(self, filename,  m['title'], Date.parse(m['date'].to_s), m['synopsis'], m['subtitle'], m['tags'], m['explicit'])
         filesfound << filename
 
         write_meta meta
@@ -164,14 +162,14 @@ class Woody
     end
 
     # Writes the metadata file
-    def self.write_meta(meta)
+    def write_meta(meta)
       File.open( 'content/metadata.yml', 'w' ) do |out|
         YAML.dump meta, out
       end
     end
 
     # Copies custom assets to output
-    def self.copy_assets
+    def copy_assets
       Dir.glob "templates/assets/**/*" do |item|
         next if File.directory? item
         d = item[10..-1] # Cut off "templates/" at beginning
@@ -181,7 +179,7 @@ class Woody
 
 
     # Deletes old files from the site's output directory
-    def self.purge_output
+    def purge_output
       Dir.glob "output/**/*" do |item|
         next if File.directory? item
         File.delete item unless @@touchedfiles.include? item

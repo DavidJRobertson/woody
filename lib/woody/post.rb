@@ -11,7 +11,8 @@ class Woody
     # @param  [Date]   date specifies the Post's published date
     # @param  [Array]  tags specifies the Post's tags - each element is a String
     # @return [Post] the new Post object
-    def initialize(filename, title, subtitle, raw_body, date, tags = [], compiledname = nil)
+    def initialize(site, filename, title, subtitle, raw_body, date, tags = [], compiledname = nil)
+      @site = site
       @filename = filename
       @title = title
       @subtitle = subtitle
@@ -24,12 +25,12 @@ class Woody
 
     def body(regenerate = false)
       return @body unless @body.nil? or regenerate
-      return@body = Kramdown::Document.new(@raw_body).to_html
+      return @body = Kramdown::Document.new(@raw_body).to_html
     end
 
     # @return the Page's page URL where possible, otherwise false
     def url
-      return "#{$config['urlbase']}#{path!}" unless path! == false
+      return "#{@site.config['urlbase']}#{path!}" unless path! == false
       return false
     end
 
@@ -41,7 +42,7 @@ class Woody
 
     # @return the Page's page path where possible, otherwise false. Includes the site prefix if enabled.
     def path(leader=true)
-      prefix = $config['s3']['prefix']
+      prefix = @site.config['s3']['prefix']
       return "#{leader ? "/" : ""}#{prefix.nil? ? "" : prefix + "/" }post/#{@compiledname.chomp(File.extname(@compiledname))}.html" unless @compiledname.nil?
       return false
     end

@@ -14,8 +14,8 @@ command :compile do |c|
   c.description = "Compiles the site"
   c.option "--no-add", "Don't ask to add new metadata"
   c.action do |args, options|
-    Woody.init
-    Woody::Compiler.compile(options)
+    site = Woody.new
+    site.compile(options)
   end
 end
 alias_command :c, :compile
@@ -23,8 +23,8 @@ alias_command :c, :compile
 command :deploy do |c|
   c.description = "Deploys the site"
   c.action do |args, options|
-    Woody.init
-    Woody::Deployer.deploy
+    site = Woody.new
+    site.deploy
   end
 end
 alias_command :d, :deploy
@@ -33,9 +33,9 @@ command :cd do |c|
   c.description = "Compiles then deploys the site"
   c.option "--no-add", "Don't ask to add new metadata"
   c.action do |args, options|
-    Woody.init
-    Woody::Compiler.compile(options)
-    Woody::Deployer.deploy
+    site = Woody.new
+    site.compile(options)
+    site.deploy
   end
 end
 
@@ -47,15 +47,15 @@ command :new do |c|
       puts "Syntax: woody new [sitename]"
       exit!
     end
-    Woody::Generator.new_site(args[0])
+    Woody.new_site(args[0])
   end
 end
 
 command :'update templates' do |c|
   c.description = "Sets template files to current default. DESTRUCTIVE!"
   c.action do |args, options|
-    Woody.init
-    Woody::Generator.update_templates
+    site = Woody.new
+    site.update_templates
   end
 end
 alias_command :'templates update', :'update templates'

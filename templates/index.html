@@ -1,5 +1,5 @@
 <h2>Episodes:</h2>
-<%= link_to "RSS Feed", "#{$config['urlbase']}/feed.xml" %>
+<%= link_to "RSS Feed", "#{ config['urlbase'] }/feed.xml" %>
 <% posts.each do |post| %>
   <div class="episode">
   <%= yield post %>
