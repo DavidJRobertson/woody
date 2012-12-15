@@ -13,7 +13,6 @@ default_command :compile
 $dir = "."
 global_option '--dir', '--dir path/to/site', "Specifies path to Woody site directory, if not the current directory" do |dir|
   $dir = dir
-  puts $dir
 end
 
 command :compile do |c|
