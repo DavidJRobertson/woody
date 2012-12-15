@@ -1,3 +1,5 @@
+require 'kramdown'
+
 module Woody
   # Represents a post
   class Post
@@ -9,16 +11,21 @@ module Woody
     # @param  [Date]   date specifies the Post's published date
     # @param  [Array]  tags specifies the Post's tags - each element is a String
     # @return [Post] the new Post object
-    def initialize(filename, title, subtitle, body, date, tags = [], compiledname = nil)
+    def initialize(filename, title, subtitle, raw_body, date, tags = [], compiledname = nil)
       @filename = filename
       @title = title
       @subtitle = subtitle
-      @body = body
+      @raw_body = raw_body
       @date = date
       @tags = tags.nil? ? [] : tags
       @compiledname = @filename[6..-1].gsub(/[^0-9A-Za-z ._]/, '').gsub(' ', '_')
     end
-    attr_accessor :filename, :title, :subtitle, :body, :date, :tags, :compiledname
+    attr_accessor :filename, :title, :subtitle, :raw_body, :date, :tags, :compiledname
+
+    def body(regenerate = false)
+      return @body unless @body.nil? or regenerate
+      return@body = Kramdown::Document.new(@raw_body).to_html
+    end
 
     # @return the Page's page URL where possible, otherwise false
     def url

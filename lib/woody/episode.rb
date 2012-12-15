@@ -19,8 +19,8 @@ module Woody
     # @param  [String] subtitle specifies the episode's subtitle
     # @param  [Array]  tags specifies the episode's tags - each element is a String
     # @return [Episode] the new Episode object
-    def initialize(filename, title, date, body, subtitle = nil, tags = [], explicit = false)
-      super filename, title, subtitle, body, date, tags
+    def initialize(filename, title, date, raw_body, subtitle = nil, tags = [], explicit = false)
+      super filename, title, subtitle, raw_body, date, tags
       @explicit = explicit
       @compiledname = @filename.gsub(/[^0-9A-Za-z ._]/, '').gsub(' ', '_')
     end
