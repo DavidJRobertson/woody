@@ -1,4 +1,4 @@
-module Woody
+class Woody
   # Handles functions related to generating Woody sites and updating them and their data stores
   module Generator
     # Generates a blank skeleton Woody site
@@ -37,12 +37,12 @@ module Woody
     end
 
     # Replaces the templates in the Woody site with the gem's current default ones
-    def self.update_templates
+    def self.update_templates(site)
       puts "Updating templates..."
-      cpy_t("layout.html", "templates/layout.html")
-      cpy_t("index.html", "templates/index.html")
-      cpy_t("post.html", "templates/post.html")
-      cpy_t("stylesheet.css", "templates/assets/stylesheet.css")
+      cpy_t("layout.html", site.dir("templates/layout.html"))
+      cpy_t("index.html", site.dir("templates/index.html"))
+      cpy_t("post.html", site.dir("templates/post.html"))
+      cpy_t("stylesheet.css", site.dir("templates/assets/stylesheet.css"))
       puts "Done! Thanks for updating :)"
     end
 

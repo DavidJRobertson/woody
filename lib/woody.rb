@@ -20,34 +20,45 @@ require 'mp3info'
 $VERBOSE = oldverbosity
 
 # Woody podcast static site generator
-module Woody
+class Woody
+  include Generator
+  include Compiler
+  include Deployer
+
+
   # Path of template directory inside gem
   $source_root = File.expand_path("../../templates", __FILE__)
 
   # Load configuration and connect to S3
-  def self.init
+  def initialize(directory = ".")
+    @directory = directory
+    @touchedfiles = []
+    @s3touchedobjects = []
+
+
+
     begin
-      $config = YAML.load_file("woody-config.yml")
+      @config = YAML.load_file(dir("woody-config.yml"))
     rescue Errno::ENOENT
       puts "This doesn't look like a valid Woody site directory!"
       exit!
     end
 
     # Strip trailing slash from urlbase, if present.
-    if $config['urlbase'].end_with? "/"
-      $config['urlbase'] = $config['urlbase'][0..-2]
+    if @config['urlbase'].end_with? "/"
+      @config['urlbase'] = @config['urlbase'][0..-2]
     end
 
-    if $config['distributiontype'] == "s3"
-      prefix = $config['s3']['prefix']
+    if @config['distributiontype'] == "s3"
+      prefix = @config['s3']['prefix']
       unless prefix.nil?
-        $config['urlbase'] = $config['urlbase'] + "/" + prefix
+        @config['urlbase'] = @config['urlbase'] + "/" + prefix
       end
     end
 
-    options = { 
-      :access_key_id     => $config['s3']['accesskey']['id'], 
-      :secret_access_key => $config['s3']['accesskey']['secret']
+    s3options = {
+      :access_key_id     => @config['s3']['accesskey']['id'],
+      :secret_access_key => @config['s3']['accesskey']['secret']
     }
     
     unless ENV['http_proxy'].nil?
@@ -57,14 +68,28 @@ module Woody
       p[:port]     = uri.port
       p[:user]     = uri.user     unless uri.user.nil?
       p[:password] = uri.password unless uri.password.nil?
-      options[:proxy] = p 
+      s3options[:proxy] = p
     end
     
-    AWS::S3::Base.establish_connection!(options)
-    AWS::S3::DEFAULT_HOST.replace $config['s3']['hostname']
-    $bucketname = $config['s3']['bucket']  
+    AWS::S3::Base.establish_connection!(s3options)
+    AWS::S3::DEFAULT_HOST.replace @config['s3']['hostname']
+    @bucketname = @config['s3']['bucket']
   end
 
+  attr_accessor :config
+  attr_reader :directory
+
+  def dir(dir="")
+    File.expand_path(File.join(@directory, dir))
+  end
+
+  def undir(string)
+    string[dir.length+1..-1]
+  end
+
+  def update_templates
+    Generator::update_templates(self)
+  end
 end
 
 

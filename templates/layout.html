@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= $config['title'] %></title>
+    <meta charset="UTF-8" />
+    <title><%= config['title'] %></title>
     <%= generator_meta_tag %>
     <link rel="stylesheet" type="text/css" href="/assets/stylesheet.css" />
   </head>
   <body>
-    <h1><%= link_to $config['title'], $config['urlbase'] %></h1>
-    <h2><%= $config['subtitle'] %></h2>
+    <h1><%= link_to config['title'], config['urlbase'] %></h1>
+    <h2><%= config['subtitle'] %></h2>
     <hr />
     <%= yield %>
   </body>
