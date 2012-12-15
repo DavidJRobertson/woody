@@ -32,9 +32,13 @@ class Woody
   # Load configuration and connect to S3
   def initialize(directory = ".")
     @directory = directory
+    @touchedfiles = []
+    @s3touchedobjects = []
+
+
 
     begin
-      @config = YAML.load_file("woody-config.yml")
+      @config = YAML.load_file(dir("woody-config.yml"))
     rescue Errno::ENOENT
       puts "This doesn't look like a valid Woody site directory!"
       exit!
@@ -73,7 +77,19 @@ class Woody
   end
 
   attr_accessor :config
+  attr_reader :directory
 
+  def dir(dir="")
+    File.expand_path(File.join(@directory, dir))
+  end
+
+  def undir(string)
+    string[dir.length+1..-1]
+  end
+
+  def update_templates
+    Generator::update_templates(self)
+  end
 end
 
 

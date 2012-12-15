@@ -1,13 +1,13 @@
 class Woody
   # Handles functions relating to deploying the Woody site
   module Deployer
-    @@touchedfiles = []
     # Deploys the Woody site to S3
     def deploy
       puts "Deploying..."
 
-      Dir.glob "output/**/*" do |item|
+      Dir.glob dir("output/**/*") do |item|
         next if File.directory? item
+        item = undir item
         name = item[7..-1] # Remove "output/"
         next if name == "index.html" # These *must* be left until last
         next if name == "feed.xml"
@@ -31,12 +31,12 @@ class Woody
       prefix = @config['s3']['prefix']
       if prefix.nil?
         bucket.objects.each do |object|
-          object.delete unless @@touchedfiles.include? object.key
+          object.delete unless @s3touchedobjects.include? object.key
         end
       else
         bucket.objects.each do |object|
           if object.key.start_with? prefix # If using a prefix, don't delete anything outside of that 'subdirectory'
-            object.delete unless @@touchedfiles.include? object.key
+            object.delete unless @s3touchedobjects.include? object.key
           end
         end
       end
@@ -55,9 +55,11 @@ class Woody
         objectname = File.join(prefix, objectname)
       end
 
+      filepath = dir(filepath)
+
       # Generate hash of file
       hash = filehash filepath
-      @@touchedfiles << objectname
+      @s3touchedobjects << objectname
       # Get hash of version already uploaded, if available.
       begin
         object = AWS::S3::S3Object.find objectname, @bucketname
