@@ -33,14 +33,10 @@ class Woody
 
       # Process blog posts
       Dir.glob(dir('content/posts/*')) do |file|
-        puts file
         filename = undir(file)[8..-1]
-        puts file
-        puts filename
         data = Preamble.load(file)
         meta = data[0]
         body = data[1]
-
 
         posts << Post.new(self, filename, meta['title'], meta['subtitle'], body, Date.parse(meta['date'].to_s), meta['tags'])
       end
