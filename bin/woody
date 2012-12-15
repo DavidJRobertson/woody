@@ -10,11 +10,17 @@ program :description, 'Podcast static site generator'
 
 default_command :compile
 
+$dir = "."
+global_option '-d', '-d path/to/site', "Specifies path to Woody site directory, if not the current directory" do |dir|
+  $dir = dir
+  puts $dir
+end
+
 command :compile do |c|
   c.description = "Compiles the site"
   c.option "--no-add", "Don't ask to add new metadata"
   c.action do |args, options|
-    site = Woody.new
+    site = Woody.new($dir)
     site.compile(options)
   end
 end
@@ -23,7 +29,7 @@ alias_command :c, :compile
 command :deploy do |c|
   c.description = "Deploys the site"
   c.action do |args, options|
-    site = Woody.new
+    site = Woody.new($dir)
     site.deploy
   end
 end
@@ -33,7 +39,7 @@ command :cd do |c|
   c.description = "Compiles then deploys the site"
   c.option "--no-add", "Don't ask to add new metadata"
   c.action do |args, options|
-    site = Woody.new
+    site = Woody.new($dir)
     site.compile(options)
     site.deploy
   end
@@ -47,14 +53,14 @@ command :new do |c|
       puts "Syntax: woody new [sitename]"
       exit!
     end
-    Woody.new_site(args[0])
+    Woody::Generator.new_site(args[0])
   end
 end
 
 command :'update templates' do |c|
   c.description = "Sets template files to current default. DESTRUCTIVE!"
   c.action do |args, options|
-    site = Woody.new
+    site = Woody.new($dir)
     site.update_templates
   end
 end
