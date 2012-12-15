@@ -12,7 +12,6 @@ class Woody
   		# instantiate the metadata hash so shit doesn't explode in our faces
       meta = Hash.new if meta == false
 
-
       posts      = Array.new
       filesfound = Array.new
       Dir.glob(dir('content/*.mp3')) do |file|
@@ -35,10 +34,10 @@ class Woody
       Dir.glob(dir('content/posts/*')) do |file|
         filename = undir(file)[8..-1]
         data = Preamble.load(file)
-        meta = data[0]
+        m = data[0]
         body = data[1]
 
-        posts << Post.new(self, filename, meta['title'], meta['subtitle'], body, Date.parse(meta['date'].to_s), meta['tags'])
+        posts << Post.new(self, filename, m['title'], m['subtitle'], body, Date.parse(m['date'].to_s), m['tags'])
       end
 
       posts.sort_by! do |post|
