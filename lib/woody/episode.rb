@@ -1,14 +1,14 @@
 require "woody/post"
 
-module Woody
+class Woody
   # Represents an episode of the podcast. Inherits from Post.
   class Episode < Post
     # Creates a new Episode object from segment of metadata.yml
     # @param  [String] filename specifies the name of the MP3 file
     # @param  [Hash] meta is the relevant part of metadata.yml
     # @return [Episode] the new Episode object
-    def self.new_from_meta(filename, meta)
-      return Episode.new(filename, meta['title'], Date.parse(meta['date'].to_s), meta['synopsis'], meta['subtitle'], meta['tags'], meta['explicit'])
+    def self.new_from_meta(site, filename, meta)
+      return Episode.new(site, filename, meta['title'], Date.parse(meta['date'].to_s), meta['synopsis'], meta['subtitle'], meta['tags'], meta['explicit'])
     end
 
     # Creates a new Episode object
@@ -19,8 +19,8 @@ module Woody
     # @param  [String] subtitle specifies the episode's subtitle
     # @param  [Array]  tags specifies the episode's tags - each element is a String
     # @return [Episode] the new Episode object
-    def initialize(filename, title, date, raw_body, subtitle = nil, tags = [], explicit = false)
-      super filename, title, subtitle, raw_body, date, tags
+    def initialize(site, filename, title, date, raw_body, subtitle = nil, tags = [], explicit = false)
+      super site, filename, title, subtitle, raw_body, date, tags
       @explicit = explicit
       @compiledname = @filename.gsub(/[^0-9A-Za-z ._]/, '').gsub(' ', '_')
     end
@@ -30,7 +30,7 @@ module Woody
 
     # @return the episode's media file URL where possible, otherwise false
     def file_url
-      return "#{$config['urlbase']}#{file_path!}" unless file_path! == false
+      return "#{@site.config['urlbase']}#{file_path!}" unless file_path! == false
       return false
     end
 
@@ -42,7 +42,7 @@ module Woody
 
     # @return the episode's media file path! where possible, otherwise false. Includes site prefix if enabled.
     def file_path(leader=true)
-      prefix = $config['s3']['prefix']
+      prefix = @site.config['s3']['prefix']
       return "#{leader ? "/" : ""}#{prefix.nil? ? "" : prefix + "/" }assets/mp3/#{@compiledname}" unless @compiledname.nil?
       return false
     end
@@ -51,7 +51,7 @@ module Woody
 
     # @return [Integer] the size of the episodes media file in bytes
     def size
-      File.size File.join("content", filename)
+      File.size @site.dir(File.join("content", filename))
     end
    
     # @return [String] 'yes' if explicit content, otherwise 'no'
@@ -63,7 +63,7 @@ module Woody
     def duration
       return @duration unless @duration.nil?
       length = 0
-      Mp3Info.open(File.join("content", filename)) do |mp3|
+      Mp3Info.open(@site.dir(File.join("content", filename))) do |mp3|
         length = mp3.length
       end
       @duration = Time.at(length).gmtime.strftime('%R:%S') # Should work up to 24 hours
