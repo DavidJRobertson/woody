@@ -1,6 +1,6 @@
 require 'preamble'
 
-module Woody
+class Woody
   # Handles functions related to compiling the Woody site
   module Compiler
     @@touchedfiles = []

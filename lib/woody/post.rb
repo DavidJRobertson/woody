@@ -1,6 +1,6 @@
 require 'kramdown'
 
-module Woody
+class Woody
   # Represents a post
   class Post
     # Creates a new Post object

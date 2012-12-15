@@ -1,4 +1,4 @@
-module Woody
+class Woody
   # Handles functions relating to deploying the Woody site
   module Deployer
     @@touchedfiles = []

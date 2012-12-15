@@ -20,7 +20,7 @@ require 'mp3info'
 $VERBOSE = oldverbosity
 
 # Woody podcast static site generator
-module Woody
+class Woody
   # Path of template directory inside gem
   $source_root = File.expand_path("../../templates", __FILE__)
 

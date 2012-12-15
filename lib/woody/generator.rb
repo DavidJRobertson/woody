@@ -1,4 +1,4 @@
-module Woody
+class Woody
   # Handles functions related to generating Woody sites and updating them and their data stores
   module Generator
     # Generates a blank skeleton Woody site

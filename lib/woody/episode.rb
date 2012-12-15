@@ -1,6 +1,6 @@
 require "woody/post"
 
-module Woody
+class Woody
   # Represents an episode of the podcast. Inherits from Post.
   class Episode < Post
     # Creates a new Episode object from segment of metadata.yml
