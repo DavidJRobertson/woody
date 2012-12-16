@@ -20,7 +20,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'erubis'
   gem.add_runtime_dependency 'mp3info'
   gem.add_runtime_dependency 'aws-s3'
-  gem.add_runtime_dependency 'commander'
+  gem.add_runtime_dependency 'commander', '>= 4.1.3'
   gem.add_runtime_dependency 'highline'
   gem.add_runtime_dependency 'preamble'
   gem.add_runtime_dependency 'kramdown'
