@@ -31,7 +31,7 @@ After this, Woody will generate a full HTML site in the output folder. You can u
 
     $ woody deploy
    
-to deploy your Woody site on to Amazon S3 (be sure to enter your AWS credentials correctly into the configuration file.)
+to deploy your Woody site on to Amazon S3. Be sure to enter your AWS credentials correctly into the configuration file.
 
 **SCREENCAST COMING SOON!**
 
